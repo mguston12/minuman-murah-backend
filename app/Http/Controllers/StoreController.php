@@ -6,6 +6,7 @@ use App\Http\Requests\StoreRequest\StoreStoreRequest;
 use App\Http\Requests\StoreRequest\UpdateStoreRequest;
 use App\Http\Resources\StoreResource\StoreResource;
 use App\Interfaces\StoreRepositoryInterface;
+use App\Models\Store;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -87,7 +88,10 @@ class StoreController extends Controller
      */
     public function getPublicActiveStores(Request $request): JsonResponse
     {
-        $stores = $this->storeRepository->getPublicActiveStores();
+        $stores = Store::with('products')
+            ->where('status', 'ACTIVE')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'success' => true,
