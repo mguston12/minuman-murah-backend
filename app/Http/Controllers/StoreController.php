@@ -80,6 +80,24 @@ class StoreController extends Controller
     }
 
     /**
+     * Get all active stores for public usage.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getPublicActiveStores(Request $request): JsonResponse
+    {
+        $stores = $this->storeRepository->getPublicActiveStores();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'stores' => StoreResource::collection($stores),
+            ],
+        ], 200);
+    }
+
+    /**
      * Store a newly created store.
      *
      * @param StoreStoreRequest $request

@@ -117,7 +117,7 @@ Route::prefix('brands')->group(function () {
 
 // Public store routes (no auth required)
 Route::prefix('public/stores')->group(function () {
-    Route::get('/', [StoreController::class, 'all']);
+    Route::get('/', [StoreController::class, 'getPublicActiveStores']);
 });
 
 // Public taxonomy lists routes (no auth required for categories/collections)
