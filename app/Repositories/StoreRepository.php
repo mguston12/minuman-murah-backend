@@ -40,6 +40,20 @@ class StoreRepository implements StoreRepositoryInterface
     }
 
     /**
+     * Get all active stores for public usage.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getPublicActiveStores()
+    {
+        return Store::query()
+            ->with('products')
+            ->where('status', 'ACTIVE')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
+    /**
      * Get paginated stores.
      *
      * @param int $perPage

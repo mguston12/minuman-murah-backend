@@ -15,6 +15,7 @@ class ProductGroup extends Model
     protected $fillable = [
         'key',
         'title',
+        'description',
         'image',
         'sort',
         'status',

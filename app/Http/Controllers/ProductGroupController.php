@@ -39,6 +39,7 @@ class ProductGroupController extends Controller
         $validated = $request->validate([
             'title'  => 'required|string|unique:product_groups,title',
             'key'    => 'required|string|unique:product_groups,key',
+            'description' => 'nullable|string',
             'image'  => 'nullable|image|max:2048',
             'sort'   => 'nullable|integer|min:0',
             'status' => 'required|in:ACTIVE,INACTIVE',
@@ -110,6 +111,7 @@ class ProductGroupController extends Controller
         $validated = $request->validate([
             'title'  => 'required|string|unique:product_groups,title,' . $id,
             'key'    => 'required|string|unique:product_groups,key,' . $id,
+            'description' => 'nullable|string',
             'image'  => 'nullable|image|max:2048',
             'sort'   => 'nullable|integer|min:0',
             'status' => 'required|in:ACTIVE,INACTIVE',

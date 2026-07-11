@@ -69,7 +69,7 @@ class StoreController extends Controller
      */
     public function all(Request $request): JsonResponse
     {
-        $stores = $this->storeRepository->all();
+        $stores = $this->storeRepository->getPublicActiveStores();
 
         return response()->json([
             'success' => true,
@@ -195,4 +195,3 @@ class StoreController extends Controller
         ], 200);
     }
 }
-
