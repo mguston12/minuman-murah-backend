@@ -46,8 +46,7 @@ class StoreRepository implements StoreRepositoryInterface
      */
     public function getPublicActiveStores()
     {
-        return Store::query()
-            ->with('products')
+        return Store::with('products')
             ->where('status', 'ACTIVE')
             ->orderBy('created_at', 'desc')
             ->get();
