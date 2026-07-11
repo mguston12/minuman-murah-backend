@@ -69,7 +69,7 @@ class StoreController extends Controller
      */
     public function all(Request $request): JsonResponse
     {
-        $stores = $this->storeRepository->getPublicActiveStores();
+        $stores = $this->storeRepository->all();
 
         return response()->json([
             'success' => true,
