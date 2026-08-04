@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductVariantController extends Controller
 {
@@ -351,8 +352,9 @@ class ProductVariantController extends Controller
             ]);
 
             // Upload file ke storage/app/public/products/variants/
+            // Gunakan uniqid() agar beberapa upload pada detik yang sama tidak saling menimpa
             $file = $request->file('image');
-            $filename = 'variant_' . $validated['fk_product_id'] . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $filename = 'variant_' . $validated['fk_product_id'] . '_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
 
             $path = $file->storeAs(
                 'products/variants',

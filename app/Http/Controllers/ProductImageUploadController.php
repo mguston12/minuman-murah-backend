@@ -7,6 +7,7 @@ use App\Repositories\ProductImageRepository;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProductImageUploadController extends Controller
 {
@@ -34,8 +35,9 @@ class ProductImageUploadController extends Controller
             ]);
 
             // Upload file ke storage/app/public/products/images/
+            // Gunakan uniqid() agar beberapa upload pada detik yang sama tidak saling menimpa
             $file = $request->file('image');
-            $filename = 'product_' . $validated['fk_product_id'] . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $filename = 'product_' . $validated['fk_product_id'] . '_' . time() . '_' . Str::random(8) . '.' . $file->getClientOriginalExtension();
             
             $path = $file->storeAs(
                 'products/images',
@@ -90,7 +92,7 @@ class ProductImageUploadController extends Controller
         try {
             $validated = $request->validate([
                 'fk_product_id' => 'required|integer|exists:products,id',
-                'images' => 'required|array|max:10', // Max 10 images
+                'images' => 'required|array|max:7', // Max 7 images
                 'images.*' => 'image|mimes:jpeg,png,gif,webp|max:5120',
             ]);
 
@@ -98,7 +100,7 @@ class ProductImageUploadController extends Controller
             $orderNumber = 1;
 
             foreach ($request->file('images') as $file) {
-                $filename = 'product_' . $validated['fk_product_id'] . '_' . time() . '_' . $orderNumber . '.' . $file->getClientOriginalExtension();
+                $filename = 'product_' . $validated['fk_product_id'] . '_' . time() . '_' . $orderNumber . '_' . Str::random(6) . '.' . $file->getClientOriginalExtension();
                 
                 $path = $file->storeAs(
                     'products/images',
