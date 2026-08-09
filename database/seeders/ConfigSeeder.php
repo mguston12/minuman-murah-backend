@@ -52,13 +52,13 @@ class ConfigSeeder extends Seeder
             ],
             [
                 'key' => 'email_from_name',
-                'value' => 'Bison Denim Admin',
+                'value' => 'Minuman Murah Admin',
                 'description' => 'Email from name',
                 'type' => 'string',
             ],
             [
                 'key' => 'email_from_address',
-                'value' => 'noreply@bisondenim.com',
+                'value' => 'noreply@minumanmurah.com',
                 'description' => 'Email from address',
                 'type' => 'string',
             ],
@@ -66,7 +66,7 @@ class ConfigSeeder extends Seeder
             // ===== GENERAL SETTINGS =====
             [
                 'key' => 'app_name',
-                'value' => 'Bison Denim',
+                'value' => 'Minuman Murah',
                 'description' => 'Application name',
                 'type' => 'string',
             ],
@@ -92,13 +92,13 @@ class ConfigSeeder extends Seeder
             // ===== STORE SETTINGS =====
             [
                 'key' => 'store_name',
-                'value' => 'Bison Denim',
+                'value' => 'Minuman Murah',
                 'description' => 'Store name',
                 'type' => 'string',
             ],
             [
                 'key' => 'store_email',
-                'value' => 'store@bisondenim.com',
+                'value' => 'store@minumanmurah.com',
                 'description' => 'Store email',
                 'type' => 'string',
             ],
@@ -146,13 +146,13 @@ class ConfigSeeder extends Seeder
             ],
             [
                 'key' => 'store_logo_website',
-                'value' => 'https://via.placeholder.com/300x100?text=Bison Denim+Logo',
+                'value' => 'https://via.placeholder.com/300x100?text=Minuman Murah+Logo',
                 'description' => 'Store logo website (image URL or file path)',
                 'type' => 'string',
             ],
             [
                 'key' => 'store_favicon',
-                'value' => 'https://via.placeholder.com/32x32?text=Bison Denim',
+                'value' => 'https://via.placeholder.com/32x32?text=Minuman Murah',
                 'description' => 'Store favicon (image URL or file path)',
                 'type' => 'string',
             ],
@@ -160,31 +160,31 @@ class ConfigSeeder extends Seeder
             // ===== SOCIAL MEDIA SETTINGS =====
             [
                 'key' => 'social_instagram',
-                'value' => 'https://instagram.com/bisondenim',
+                'value' => 'https://instagram.com/minumanmurah',
                 'description' => 'Instagram URL',
                 'type' => 'string',
             ],
             [
                 'key' => 'social_tiktok',
-                'value' => 'https://tiktok.com/@bisondenim',
+                'value' => 'https://tiktok.com/@minumanmurah',
                 'description' => 'TikTok URL',
                 'type' => 'string',
             ],
             [
                 'key' => 'social_facebook',
-                'value' => 'https://facebook.com/bisondenim',
+                'value' => 'https://facebook.com/minumanmurah',
                 'description' => 'Facebook URL',
                 'type' => 'string',
             ],
             [
                 'key' => 'social_youtube',
-                'value' => 'https://youtube.com/@bisondenim',
+                'value' => 'https://youtube.com/@minumanmurah',
                 'description' => 'YouTube URL',
                 'type' => 'string',
             ],
             [
                 'key' => 'social_pinterest',
-                'value' => 'https://pinterest.com/bisondenim',
+                'value' => 'https://pinterest.com/minumanmurah',
                 'description' => 'Pinterest URL',
                 'type' => 'string',
             ],

@@ -15,12 +15,12 @@ class GeneralSettingSeeder extends Seeder
     {
         GeneralSetting::create([
             'phone' => '+62-812-3456-7890',
-            'email' => 'info@bisondenim.com',
-            'instagram' => 'https://instagram.com/bisondenim',
-            'tiktok' => 'https://tiktok.com/@bisondenim',
-            'facebook' => 'https://facebook.com/bisondenim',
-            'youtube' => 'https://youtube.com/@bisondenim',
-            'pinterest' => 'https://pinterest.com/bisondenim',
+            'email' => 'info@minumanmurah.com',
+            'instagram' => 'https://instagram.com/minumanmurah',
+            'tiktok' => 'https://tiktok.com/@minumanmurah',
+            'facebook' => 'https://facebook.com/minumanmurah',
+            'youtube' => 'https://youtube.com/@minumanmurah',
+            'pinterest' => 'https://pinterest.com/minumanmurah',
             'location' => 'Jl. Merdeka No. 123, Jakarta, Indonesia',
         ]);
 
