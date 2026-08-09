@@ -63,7 +63,7 @@ class TaxoListController extends Controller
 
     /**
      * Get taxonomy items by parent.
-     */
+     */ 
     public function getByParent(int $parentId): JsonResponse
     {
         try {
