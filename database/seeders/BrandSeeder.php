@@ -16,34 +16,82 @@ class BrandSeeder extends Seeder
 
         $brands = [
             [
-                'name' => 'Denim Republic',
-                'slug' => 'denim-republic',
-                'logo' => "$baseUrl/uploads/brands/denim-republic.png",
+                'name' => 'Johnnie Walker',
+                'slug' => 'johnnie-walker',
+                'logo' => "$baseUrl/uploads/brands/johnnie-walker.png",
                 'status' => 'ACTIVE',
                 'order' => 1,
-                'description' => 'A premium denim label specializing in high-quality jeans, jackets, and workwear essentials.',
+                'description' => 'Merek Scotch Whisky paling terkenal di dunia dengan varian ikonik seperti Red Label, Black Label, hingga Blue Label.',
             ],
             [
-                'name' => 'Blue Stone',
-                'slug' => 'blue-stone',
-                'logo' => "$baseUrl/uploads/brands/blue-stone.png",
+                'name' => 'Hennessy',
+                'slug' => 'hennessy',
+                'logo' => "$baseUrl/uploads/brands/hennessy.png",
                 'status' => 'ACTIVE',
                 'order' => 2,
-                'description' => 'A casual wear label offering comfortable everyday clothing with a clean, modern aesthetic.',
+                'description' => 'Produsen Cognac mewah terkemuka asal Prancis yang terkenal dengan cita rasa halus dan aroma yang kaya.',
             ],
             [
-                'name' => 'Indigo Wear',
-                'slug' => 'indigo-wear',
-                'logo' => "$baseUrl/uploads/brands/indigo-wear.png",
+                'name' => 'Absolut Vodka',
+                'slug' => 'absolut-vodka',
+                'logo' => "$baseUrl/uploads/brands/absolut-vodka.png",
                 'status' => 'ACTIVE',
                 'order' => 3,
-                'description' => 'A streetwear label rooted in urban culture, blending bold graphics with comfortable street-ready fits.',
+                'description' => 'Merek Vodka premium asal Swedia yang diproduksi dari gandum musim dingin alami tanpa gula tambahan.',
+            ],
+            [
+                'name' => 'Tanqueray',
+                'slug' => 'tanqueray',
+                'logo' => "$baseUrl/uploads/brands/tanqueray.png",
+                'status' => 'ACTIVE',
+                'order' => 4,
+                'description' => 'London Dry Gin klasik dengan karakter botanical juniper yang kuat, sempurna untuk racikan Gin & Tonic.',
+            ],
+            [
+                'name' => 'Bacardi',
+                'slug' => 'bacardi',
+                'logo' => "$baseUrl/uploads/brands/bacardi.png",
+                'status' => 'ACTIVE',
+                'order' => 5,
+                'description' => 'Merek Rum legendaris yang ideal untuk berbagai cocktail klasik seperti Mojito dan Cuba Libre.',
+            ],
+            [
+                'name' => 'Heineken',
+                'slug' => 'heineken',
+                'logo' => "$baseUrl/uploads/brands/heineken.png",
+                'status' => 'ACTIVE',
+                'order' => 6,
+                'description' => 'Beer lager premium asal Belanda dengan rasa segar, ringan, dan warna keemasan yang khas.',
+            ],
+            [
+                'name' => 'Penfolds',
+                'slug' => 'penfolds',
+                'logo' => "$baseUrl/uploads/brands/penfolds.png",
+                'status' => 'ACTIVE',
+                'order' => 7,
+                'description' => 'Produsen Wine ikonik asal Australia yang terkenal dengan koleksi Red Wine dan White Wine berkualitas tinggi.',
+            ],
+            [
+                'name' => 'Jack Daniel\'s',
+                'slug' => 'jack-daniels',
+                'logo' => "$baseUrl/uploads/brands/jack-daniels.png",
+                'status' => 'ACTIVE',
+                'order' => 8,
+                'description' => 'Tennessee Whiskey legendaris dengan metode penyaringan charcoal mentega khas Lynchburg, Tennessee.',
+            ],
+            [
+                'name' => 'Corona Extra',
+                'slug' => 'corona-extra',
+                'logo' => "$baseUrl/uploads/brands/corona-extra.png",
+                'status' => 'ACTIVE',
+                'order' => 9,
+                'description' => 'Beer pilsner ringan asal Meksiko yang nikmat disajikan dingin dengan irisan buah lemon/jeruk nipis.',
             ],
         ];
 
         foreach ($brands as $brand) {
             Brand::updateOrCreate(
-                ['name' => $brand['name']],
+                ['slug' => $brand['slug']],
                 $brand
             );
         }

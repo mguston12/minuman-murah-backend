@@ -71,245 +71,202 @@ class ProductSeeder extends Seeder
             ]);
         };
 
-        $warnaAttribute = Attribute::firstOrCreate(
-            ['slug' => 'warna'],
-            ['name' => 'Warna', 'slug' => 'warna', 'sort' => 1, 'status' => 'ACTIVE']
-        );
-
+        // Attributes untuk Minuman
         $ukuranAttribute = Attribute::firstOrCreate(
-            ['slug' => 'ukuran'],
-            ['name' => 'Ukuran', 'slug' => 'ukuran', 'sort' => 2, 'status' => 'ACTIVE']
+            ['slug' => 'ukuran-botol'],
+            ['name' => 'Ukuran Botol', 'slug' => 'ukuran-botol', 'sort' => 1, 'status' => 'ACTIVE']
         );
 
-        $product1 = Product::firstOrCreate(
-            ['slug' => 'celana-jeans-slim-fit-bd-001'],
+        $v350ml = AttributeValue::firstOrCreate(
+            ['attribute_id' => $ukuranAttribute->id, 'slug' => '350ml'],
+            ['attribute_id' => $ukuranAttribute->id, 'value' => '350ml', 'slug' => '350ml', 'sort' => 1, 'status' => 'ACTIVE']
+        );
+        $v700ml = AttributeValue::firstOrCreate(
+            ['attribute_id' => $ukuranAttribute->id, 'slug' => '700ml'],
+            ['attribute_id' => $ukuranAttribute->id, 'value' => '700ml', 'slug' => '700ml', 'sort' => 2, 'status' => 'ACTIVE']
+        );
+        $v750ml = AttributeValue::firstOrCreate(
+            ['attribute_id' => $ukuranAttribute->id, 'slug' => '750ml'],
+            ['attribute_id' => $ukuranAttribute->id, 'value' => '750ml', 'slug' => '750ml', 'sort' => 3, 'status' => 'ACTIVE']
+        );
+        $v1000ml = AttributeValue::firstOrCreate(
+            ['attribute_id' => $ukuranAttribute->id, 'slug' => '1000ml'],
+            ['attribute_id' => $ukuranAttribute->id, 'value' => '1 Liter', 'slug' => '1000ml', 'sort' => 4, 'status' => 'ACTIVE']
+        );
+
+        // List Produk Realistis Minuman Murah
+        $productsData = [
             [
-                'name' => 'Celana Jeans Slim Fit BD-001',
-                'slug' => 'celana-jeans-slim-fit-bd-001',
-                'is_freeshiping' => 'ACTIVE',
-                'product_information' => 'Celana jeans slim fit berbahan denim premium dengan potongan modern yang nyaman dipakai seharian.',
-                'meta_keywords' => 'celana jeans,slim fit,denim,bison denim',
-                'meta_description' => 'Celana Jeans Slim Fit premium dari Bison Denim. Bahan denim berkualitas tinggi, potongan slim fit yang stylish.',
-                'meta_title' => 'Celana Jeans Slim Fit BD-001 - Bison Denim',
-                'weight' => 0.5,
-                'type_weight' => 'KG',
-                'size_long' => 100,
-                'size_tall' => 2,
-                'size_wide' => 40,
-                'type_size' => 'CM',
-                'sort' => 1,
-                'tags' => 'celana jeans,slim fit,denim,pria',
-                'status' => 'PUBLISH',
-                'base_price' => 299000,
-                'base_strike_price' => 349000,
-                'base_discount_percent' => $discountPercent(299000, 349000),
-            ]
-        );
-        $syncProductPricing($product1, 299000, 349000);
-
-        $attachProductTaxonomy($product1, 'celana-jeans', $categoryTypeId);
-        $attachProductTaxonomy($product1, 'slim-fit', $subcategoryTypeId);
-
-        $p1WarnaAttr = ProductAttribute::firstOrCreate(
-            ['product_id' => $product1->id, 'attribute_id' => $warnaAttribute->id],
-            ['sort' => 1]
-        );
-        $p1UkuranAttr = ProductAttribute::firstOrCreate(
-            ['product_id' => $product1->id, 'attribute_id' => $ukuranAttribute->id],
-            ['sort' => 2]
-        );
-
-        $indigoValue = AttributeValue::firstOrCreate(
-            ['attribute_id' => $warnaAttribute->id, 'slug' => 'indigo'],
-            ['attribute_id' => $warnaAttribute->id, 'value' => 'Indigo', 'slug' => 'indigo', 'sort' => 1, 'status' => 'ACTIVE']
-        );
-        $hitamValue = AttributeValue::firstOrCreate(
-            ['attribute_id' => $warnaAttribute->id, 'slug' => 'hitam'],
-            ['attribute_id' => $warnaAttribute->id, 'value' => 'Hitam', 'slug' => 'hitam', 'sort' => 2, 'status' => 'ACTIVE']
-        );
-        $ukuranMValue = AttributeValue::firstOrCreate(
-            ['attribute_id' => $ukuranAttribute->id, 'slug' => 'ukuran-m'],
-            ['attribute_id' => $ukuranAttribute->id, 'value' => 'M', 'slug' => 'ukuran-m', 'sort' => 1, 'status' => 'ACTIVE']
-        );
-        $ukuranLValue = AttributeValue::firstOrCreate(
-            ['attribute_id' => $ukuranAttribute->id, 'slug' => 'ukuran-l'],
-            ['attribute_id' => $ukuranAttribute->id, 'value' => 'L', 'slug' => 'ukuran-l', 'sort' => 2, 'status' => 'ACTIVE']
-        );
-
-        foreach ([$indigoValue, $hitamValue] as $val) {
-            ProductAttributeValue::firstOrCreate([
-                'product_attribute_id' => $p1WarnaAttr->id,
-                'attribute_value_id' => $val->id,
-            ]);
-        }
-        foreach ([$ukuranMValue, $ukuranLValue] as $val) {
-            ProductAttributeValue::firstOrCreate([
-                'product_attribute_id' => $p1UkuranAttr->id,
-                'attribute_value_id' => $val->id,
-            ]);
-        }
-
-        // Variants: Indigo-M, Indigo-L, Hitam-M, Hitam-L
-        $p1Variants = [
-            ['name' => 'Indigo - M', 'sku' => 'BD-JEANS-SLIM-INDIGO-M', 'price' => 299000, 'strike_price' => 349000, 'warna' => $indigoValue, 'ukuran' => $ukuranMValue, 'qty' => 20],
-            ['name' => 'Indigo - L', 'sku' => 'BD-JEANS-SLIM-INDIGO-L', 'price' => 299000, 'strike_price' => 349000, 'warna' => $indigoValue, 'ukuran' => $ukuranLValue, 'qty' => 25],
-            ['name' => 'Hitam - M',  'sku' => 'BD-JEANS-SLIM-HITAM-M',  'price' => 309000, 'strike_price' => 359000, 'warna' => $hitamValue,  'ukuran' => $ukuranMValue, 'qty' => 18],
-            ['name' => 'Hitam - L',  'sku' => 'BD-JEANS-SLIM-HITAM-L',  'price' => 309000, 'strike_price' => 359000, 'warna' => $hitamValue,  'ukuran' => $ukuranLValue, 'qty' => 22],
+                'slug' => 'jagermeister-herbal-liqueur',
+                'name' => 'Jagermeister Herbal Liqueur',
+                'info' => 'Minuman herbal liqueur khas Jerman racikan 56 rempah pilihan. Cocok disajikan super dingin (ice cold shot).',
+                'category_slug' => 'spirits-hard-liquor',
+                'subcategory_slug' => 'cognac-brandy', // Boleh disesuaikan
+                'base_price' => 365000,
+                'base_strike' => 420000,
+                'weight' => 1.2,
+                'tags' => 'jagermeister,liqueur,herbal,spirits',
+                'image_text' => 'Jagermeister',
+                'variants' => [
+                    ['name' => '700ml', 'sku' => 'JAGER-700ML', 'price' => 365000, 'strike' => 420000, 'attr_val' => $v700ml, 'qty' => 50],
+                    ['name' => '1 Liter', 'sku' => 'JAGER-1000ML', 'price' => 485000, 'strike' => 550000, 'attr_val' => $v1000ml, 'qty' => 30],
+                ]
+            ],
+            [
+                'slug' => 'glenfiddich-12-years-single-malt-whisky',
+                'name' => 'Glenfiddich 12 Years Single Malt Whisky',
+                'slug' => 'glenfiddich-12-years',
+                'info' => 'Single Malt Scotch Whisky terpopuler dengan aroma buah pir segar dan rasa kayu oak manis yang halus.',
+                'category_slug' => 'spirits-hard-liquor',
+                'subcategory_slug' => 'whisky-bourbon',
+                'base_price' => 725000,
+                'base_strike' => 850000,
+                'weight' => 1.4,
+                'tags' => 'whisky,glenfiddich,single malt,scotch',
+                'image_text' => 'Glenfiddich+12',
+                'variants' => [
+                    ['name' => '700ml', 'sku' => 'GLEN-12-700ML', 'price' => 725000, 'strike' => 850000, 'attr_val' => $v700ml, 'qty' => 25],
+                ]
+            ],
+            [
+                'slug' => 'hennessy-xo-cognac-700ml',
+                'name' => 'Hennessy XO Cognac 700ml',
+                'info' => 'Cognac super premium asal Prancis dengan keharuman kaya akan buah-buahan kering, rempah, dan aroma kayu tua.',
+                'category_slug' => 'spirits-hard-liquor',
+                'subcategory_slug' => 'cognac-brandy',
+                'base_price' => 3145000,
+                'base_strike' => 3500000,
+                'weight' => 1.6,
+                'tags' => 'hennessy,cognac,xo,french cognac',
+                'image_text' => 'Hennessy+XO',
+                'variants' => [
+                    ['name' => '700ml', 'sku' => 'HENNESSY-XO-700ML', 'price' => 3145000, 'strike' => 3500000, 'attr_val' => $v700ml, 'qty' => 10],
+                ]
+            ],
+            [
+                'slug' => 'absolut-vodka-750ml',
+                'name' => 'Absolut Vodka 750ml',
+                'info' => 'Vodka ikonis dari Swedia berbahan dasar gandum gandum murni tanpa gula tambahan.',
+                'category_slug' => 'spirits-hard-liquor',
+                'subcategory_slug' => 'vodka',
+                'base_price' => 310000,
+                'base_strike' => 360000,
+                'weight' => 1.3,
+                'tags' => 'vodka,absolut,sweden,spirits',
+                'image_text' => 'Absolut+Vodka',
+                'variants' => [
+                    ['name' => '750ml', 'sku' => 'ABSOLUT-VODKA-750ML', 'price' => 310000, 'strike' => 360000, 'attr_val' => $v750ml, 'qty' => 40],
+                ]
+            ],
+            [
+                'slug' => 'chum-churum-original-soju',
+                'name' => 'Chum Churum Original Soju',
+                'info' => 'Minuman Soju khas Korea Selatan dengan tekstur lembut yang diolah menggunakan air alkalin alami.',
+                'category_slug' => 'beer-cider',
+                'subcategory_slug' => 'craft-beer-ale',
+                'base_price' => 45000,
+                'base_strike' => 55000,
+                'weight' => 0.8,
+                'tags' => 'soju,chum churum,korea,soju murah',
+                'image_text' => 'Chum+Churum+Soju',
+                'variants' => [
+                    ['name' => '360ml', 'sku' => 'SOJU-CHUM-360ML', 'price' => 45000, 'strike' => 55000, 'attr_val' => $v350ml, 'qty' => 100],
+                ]
+            ],
+            [
+                'slug' => 'moet-chandon-imp-rial-brut-champagne',
+                'name' => 'Moet & Chandon Impérial Brut Champagne',
+                'info' => 'Champagne ikonis Prancis yang kaya rasa apel hijau, buah sitrus, serta hint kacang hazelnut yang segar.',
+                'category_slug' => 'wine-collection',
+                'subcategory_slug' => 'sparkling-champagne',
+                'base_price' => 1150000,
+                'base_strike' => 1350000,
+                'weight' => 1.5,
+                'tags' => 'champagne,moet,wine,sparkling',
+                'image_text' => 'Moet+Chandon',
+                'variants' => [
+                    ['name' => '750ml', 'sku' => 'MOET-BRUT-750ML', 'price' => 1150000, 'strike' => 1350000, 'attr_val' => $v750ml, 'qty' => 15],
+                ]
+            ],
         ];
 
-        foreach ($p1Variants as $v) {
-            $variant = ProductVariant::firstOrCreate(
-                ['fk_product_id' => $product1->id, 'sku' => $v['sku']],
-                ['variant_name' => $v['name'], 'sku' => $v['sku'], 'price' => $v['price'], 'strike_price' => $v['strike_price'], 'discount_percent' => $discountPercent($v['price'], $v['strike_price']), 'status' => 'ACTIVE',
-                 'image_path' => 'https://via.placeholder.com/600x800?text=Jeans+'.$v['name']]
+        foreach ($productsData as $i => $p) {
+            $product = Product::firstOrCreate(
+                ['slug' => $p['slug']],
+                [
+                    'name' => $p['name'],
+                    'slug' => $p['slug'],
+                    'is_freeshiping' => 'ACTIVE',
+                    'product_information' => $p['info'],
+                    'meta_keywords' => $p['tags'],
+                    'meta_description' => $p['info'],
+                    'meta_title' => $p['name'] . ' - Minuman Murah',
+                    'weight' => $p['weight'],
+                    'type_weight' => 'KG',
+                    'size_long' => 10,
+                    'size_tall' => 32,
+                    'size_wide' => 10,
+                    'type_size' => 'CM',
+                    'sort' => $i + 1,
+                    'tags' => $p['tags'],
+                    'status' => 'PUBLISH',
+                    'base_price' => $p['base_price'],
+                    'base_strike_price' => $p['base_strike'],
+                    'base_discount_percent' => $discountPercent($p['base_price'], $p['base_strike']),
+                ]
             );
-            $syncVariantPricing($variant, $v['price'], $v['strike_price']);
-            ProductVariantOption::firstOrCreate(['variant_id' => $variant->id, 'attribute_id' => $warnaAttribute->id, 'attribute_value_id' => $v['warna']->id]);
-            ProductVariantOption::firstOrCreate(['variant_id' => $variant->id, 'attribute_id' => $ukuranAttribute->id, 'attribute_value_id' => $v['ukuran']->id]);
-            ProductVariantStock::firstOrCreate(['variant_id' => $variant->id, 'store_id' => $defaultStore->id], ['qty' => $v['qty'], 'reserved_qty' => 0]);
-        }
 
-        ProductImage::firstOrCreate(
-            ['fk_product_id' => $product1->id, 'order_number' => 1],
-            ['path' => 'https://via.placeholder.com/600x800?text=Celana+Jeans+BD-001', 'order_number' => 1, 'is_featured' => true]
-        );
+            $syncProductPricing($product, $p['base_price'], $p['base_strike']);
 
-        // =====================================================
-        // Product 2 - Kemeja Flannel Kotak-Kotak
-        // =====================================================
-        $product2 = Product::firstOrCreate(
-            ['slug' => 'kemeja-flannel-kotak-kotak-bd-002'],
-            [
-                'name' => 'Kemeja Flannel Kotak-Kotak BD-002',
-                'slug' => 'kemeja-flannel-kotak-kotak-bd-002',
-                'is_freeshiping' => 'ACTIVE',
-                'product_information' => 'Kemeja flannel motif kotak-kotak dengan bahan lembut dan hangat, cocok untuk tampilan kasual sehari-hari.',
-                'meta_keywords' => 'kemeja flannel,kotak-kotak,kasual,bison denim',
-                'meta_description' => 'Kemeja Flannel Kotak-Kotak BD-002 dari Bison Denim. Bahan lembut dan hangat untuk tampilan kasual.',
-                'meta_title' => 'Kemeja Flannel Kotak-Kotak BD-002 - Bison Denim',
-                'weight' => 0.3,
-                'type_weight' => 'KG',
-                'size_long' => 75,
-                'size_tall' => 2,
-                'size_wide' => 55,
-                'type_size' => 'CM',
-                'sort' => 2,
-                'tags' => 'kemeja,flannel,kotak,kasual',
-                'status' => 'PUBLISH',
-                'base_price' => 189000,
-                'base_strike_price' => 229000,
-                'base_discount_percent' => $discountPercent(189000, 229000),
-            ]
-        );
-        $syncProductPricing($product2, 189000, 229000);
+            $attachProductTaxonomy($product, $p['category_slug'], $categoryTypeId);
+            $attachProductTaxonomy($product, $p['subcategory_slug'], $subcategoryTypeId);
 
-        $attachProductTaxonomy($product2, 'kemeja', $categoryTypeId);
-        $attachProductTaxonomy($product2, 'kemeja-flannel', $subcategoryTypeId);
-
-        $p2UkuranAttr = ProductAttribute::firstOrCreate(
-            ['product_id' => $product2->id, 'attribute_id' => $ukuranAttribute->id],
-            ['sort' => 1]
-        );
-
-        $ukuranXLValue = AttributeValue::firstOrCreate(
-            ['attribute_id' => $ukuranAttribute->id, 'slug' => 'ukuran-xl'],
-            ['attribute_id' => $ukuranAttribute->id, 'value' => 'XL', 'slug' => 'ukuran-xl', 'sort' => 3, 'status' => 'ACTIVE']
-        );
-
-        foreach ([$ukuranMValue, $ukuranLValue, $ukuranXLValue] as $val) {
-            ProductAttributeValue::firstOrCreate([
-                'product_attribute_id' => $p2UkuranAttr->id,
-                'attribute_value_id' => $val->id,
-            ]);
-        }
-
-        $p2Variants = [
-            ['name' => 'M',  'sku' => 'BD-FLANNEL-M',  'price' => 189000, 'strike_price' => 229000, 'ukuran' => $ukuranMValue,  'qty' => 30],
-            ['name' => 'L',  'sku' => 'BD-FLANNEL-L',  'price' => 189000, 'strike_price' => 229000, 'ukuran' => $ukuranLValue,  'qty' => 35],
-            ['name' => 'XL', 'sku' => 'BD-FLANNEL-XL', 'price' => 199000, 'strike_price' => 239000, 'ukuran' => $ukuranXLValue, 'qty' => 20],
-        ];
-
-        foreach ($p2Variants as $v) {
-            $variant = ProductVariant::firstOrCreate(
-                ['fk_product_id' => $product2->id, 'sku' => $v['sku']],
-                ['variant_name' => $v['name'], 'sku' => $v['sku'], 'price' => $v['price'], 'strike_price' => $v['strike_price'], 'discount_percent' => $discountPercent($v['price'], $v['strike_price']), 'status' => 'ACTIVE',
-                 'image_path' => 'https://via.placeholder.com/600x800?text=Flannel+'.$v['name']]
+            $productUkuranAttr = ProductAttribute::firstOrCreate(
+                ['product_id' => $product->id, 'attribute_id' => $ukuranAttribute->id],
+                ['sort' => 1]
             );
-            $syncVariantPricing($variant, $v['price'], $v['strike_price']);
-            ProductVariantOption::firstOrCreate(['variant_id' => $variant->id, 'attribute_id' => $ukuranAttribute->id, 'attribute_value_id' => $v['ukuran']->id]);
-            ProductVariantStock::firstOrCreate(['variant_id' => $variant->id, 'store_id' => $defaultStore->id], ['qty' => $v['qty'], 'reserved_qty' => 0]);
-        }
 
-        ProductImage::firstOrCreate(
-            ['fk_product_id' => $product2->id, 'order_number' => 1],
-            ['path' => 'https://via.placeholder.com/600x800?text=Kemeja+Flannel+BD-002', 'order_number' => 1, 'is_featured' => true]
-        );
+            foreach ($p['variants'] as $v) {
+                ProductAttributeValue::firstOrCreate([
+                    'product_attribute_id' => $productUkuranAttr->id,
+                    'attribute_value_id' => $v['attr_val']->id,
+                ]);
 
-        $product3 = Product::firstOrCreate(
-            ['slug' => 'jaket-denim-klasik-bd-003'],
-            [
-                'name' => 'Jaket Denim Klasik BD-003',
-                'slug' => 'jaket-denim-klasik-bd-003',
-                'is_freeshiping' => 'ACTIVE',
-                'product_information' => 'Jaket denim klasik dengan potongan timeless yang cocok dipadukan dengan berbagai outfit. Bahan denim tebal dan tahan lama.',
-                'meta_keywords' => 'jaket denim,klasik,outerwear,bison denim',
-                'meta_description' => 'Jaket Denim Klasik BD-003 dari Bison Denim. Potongan timeless, bahan denim premium tahan lama.',
-                'meta_title' => 'Jaket Denim Klasik BD-003 - Bison Denim',
-                'weight' => 0.7,
-                'type_weight' => 'KG',
-                'size_long' => 65,
-                'size_tall' => 3,
-                'size_wide' => 58,
-                'type_size' => 'CM',
-                'sort' => 3,
-                'tags' => 'jaket,denim,outerwear,klasik',
-                'status' => 'PUBLISH',
-                'base_price' => 499000,
-                'base_strike_price' => 599000,
-                'base_discount_percent' => $discountPercent(499000, 599000),
-            ]
-        );
-        $syncProductPricing($product3, 499000, 599000);
+                $variant = ProductVariant::firstOrCreate(
+                    ['fk_product_id' => $product->id, 'sku' => $v['sku']],
+                    [
+                        'variant_name' => $v['name'],
+                        'sku' => $v['sku'],
+                        'price' => $v['price'],
+                        'strike_price' => $v['strike'],
+                        'discount_percent' => $discountPercent($v['price'], $v['strike']),
+                        'status' => 'ACTIVE',
+                        'image_path' => 'https://via.placeholder.com/600x800/1c1c1c/ffffff?text=' . $p['image_text']
+                    ]
+                );
 
-        $attachProductTaxonomy($product3, 'jaket-outerwear', $categoryTypeId);
-        $attachProductTaxonomy($product3, 'jaket-denim', $subcategoryTypeId);
+                $syncVariantPricing($variant, $v['price'], $v['strike']);
 
-        $p3WarnaAttr = ProductAttribute::firstOrCreate(
-            ['product_id' => $product3->id, 'attribute_id' => $warnaAttribute->id],
-            ['sort' => 1]
-        );
+                ProductVariantOption::firstOrCreate([
+                    'variant_id' => $variant->id,
+                    'attribute_id' => $ukuranAttribute->id,
+                    'attribute_value_id' => $v['attr_val']->id
+                ]);
 
-        $navyValue = AttributeValue::firstOrCreate(
-            ['attribute_id' => $warnaAttribute->id, 'slug' => 'navy'],
-            ['attribute_id' => $warnaAttribute->id, 'value' => 'Navy', 'slug' => 'navy', 'sort' => 3, 'status' => 'ACTIVE']
-        );
+                ProductVariantStock::firstOrCreate(
+                    ['variant_id' => $variant->id, 'store_id' => $defaultStore->id],
+                    ['qty' => $v['qty'], 'reserved_qty' => 0]
+                );
+            }
 
-        foreach ([$hitamValue, $navyValue] as $val) {
-            ProductAttributeValue::firstOrCreate([
-                'product_attribute_id' => $p3WarnaAttr->id,
-                'attribute_value_id' => $val->id,
-            ]);
-        }
-
-        $p3Variants = [
-            ['name' => 'Hitam', 'sku' => 'BD-JAKET-DENIM-HITAM', 'price' => 499000, 'strike_price' => 599000, 'warna' => $hitamValue, 'qty' => 15],
-            ['name' => 'Navy',  'sku' => 'BD-JAKET-DENIM-NAVY',  'price' => 499000, 'strike_price' => 599000, 'warna' => $navyValue,  'qty' => 15],
-        ];
-
-        foreach ($p3Variants as $v) {
-            $variant = ProductVariant::firstOrCreate(
-                ['fk_product_id' => $product3->id, 'sku' => $v['sku']],
-                ['variant_name' => $v['name'], 'sku' => $v['sku'], 'price' => $v['price'], 'strike_price' => $v['strike_price'], 'discount_percent' => $discountPercent($v['price'], $v['strike_price']), 'status' => 'ACTIVE',
-                 'image_path' => 'https://via.placeholder.com/600x800?text=Jaket+Denim+'.$v['name']]
+            ProductImage::firstOrCreate(
+                ['fk_product_id' => $product->id, 'order_number' => 1],
+                [
+                    'path' => 'https://via.placeholder.com/600x800/1c1c1c/ffffff?text=' . $p['image_text'],
+                    'order_number' => 1,
+                    'is_featured' => true
+                ]
             );
-            $syncVariantPricing($variant, $v['price'], $v['strike_price']);
-            ProductVariantOption::firstOrCreate(['variant_id' => $variant->id, 'attribute_id' => $warnaAttribute->id, 'attribute_value_id' => $v['warna']->id]);
-            ProductVariantStock::firstOrCreate(['variant_id' => $variant->id, 'store_id' => $defaultStore->id], ['qty' => $v['qty'], 'reserved_qty' => 0]);
         }
-
-        ProductImage::firstOrCreate(
-            ['fk_product_id' => $product3->id, 'order_number' => 1],
-            ['path' => 'https://via.placeholder.com/600x800?text=Jaket+Denim+BD-003', 'order_number' => 1, 'is_featured' => true]
-        );
     }
 }
