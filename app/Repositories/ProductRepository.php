@@ -194,7 +194,7 @@ class ProductRepository implements ProductRepositoryInterface
             $query->whereHas('hasMany_variant', function ($variantQuery) use ($attributeValueIds) {
                 $variantQuery->where('status', 'ACTIVE')
                     ->whereHas('options', function ($optQuery) use ($attributeValueIds) {
-                        $optQuery->whereIn('fk_attribute_value_id', $attributeValueIds);
+                        $optQuery->whereIn('attribute_value_id', $attributeValueIds);
                     });
             });
         }
