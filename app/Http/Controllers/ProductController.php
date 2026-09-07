@@ -56,27 +56,29 @@ class ProductController extends Controller
         }
         $categoryIds = array_filter(array_map('intval', (array) $categoryIds));
 
-        $brandIds = $request->get('brand_ids', []);
+               $brandIds = $request->get('brand_ids', []);
         if (is_string($brandIds)) {
             $brandIds = explode(',', $brandIds);
         }
         $brandIds = array_filter(array_map('intval', (array) $brandIds));
 
         $brandSlugs = $request->get('brand_slugs', []);
-
         if (is_string($brandSlugs)) {
             $brandSlugs = explode(',', $brandSlugs);
         }
-
         $brandSlugs = array_filter((array) $brandSlugs);
-        Log::info("TESSS");
-        Log::info($brandSlugs);
-        $brandIds = [];
 
         if (!empty($brandSlugs)) {
-            $brandIds = $this->brandRepository->findIdsBySlugs($brandSlugs);
-            Log::info($brandIds);
+            $slugBrandIds = $this->brandRepository->findIdsBySlugs($brandSlugs);
+            $brandIds = array_values(array_unique(array_merge($brandIds, $slugBrandIds)));
         }
+
+        // Get filter parameters - attribute values (e.g. ukuran/size)
+        $attributeValueIds = $request->get('attribute_value_ids', []);
+        if (is_string($attributeValueIds)) {
+            $attributeValueIds = explode(',', $attributeValueIds);
+        }
+        $attributeValueIds = array_filter(array_map('intval', (array) $attributeValueIds));
 
         $storeId = $request->get('store_id');
         $storeId = $storeId !== null && $storeId !== '' ? (int) $storeId : null;
@@ -110,7 +112,8 @@ class ProductController extends Controller
                 $isNewArrival,
                 $minRating,
                 $minPrice,
-                $maxPrice
+                $maxPrice,
+                $attributeValueIds
             );
 
             return response()->json([
@@ -138,7 +141,8 @@ class ProductController extends Controller
             $isNewArrival,
             $minRating,
             $minPrice,
-            $maxPrice
+            $maxPrice,
+            $attributeValueIds
         );
 
         return response()->json([
