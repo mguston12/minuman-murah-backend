@@ -1,9 +1,10 @@
-namespace App\Http\Controllers\Api;
+<?php
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\OrderResource;
+namespace App\Http\Controllers;
+
+use App\Http\Resources\OrderResource\OrderResource;
 use App\Models\Order;
-use App\Services\OrderPaymentSyncService;
+use App\Services\Payment\OrderPaymentSyncService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -83,4 +84,4 @@ class CustomerOrderController extends Controller
             ], 500);
         }
     }
-}s
+}
