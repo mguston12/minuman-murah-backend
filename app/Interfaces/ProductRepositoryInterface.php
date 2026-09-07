@@ -60,7 +60,7 @@ interface ProductRepositoryInterface
      * @param array $attributeValueIds
      * @return \Illuminate\Database\Eloquent\Collection
      */
-public function getAllWithFilters(?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = []);
+public function getAllWithFilters(?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [], array $groupIds = [] );
     /**
      * Get paginated products.
      *
@@ -77,7 +77,7 @@ public function getAllWithFilters(?string $sortBy = null, string $sortDirection 
      * @param array $attributeValueIds
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-public function paginate(int $perPage = 15, ?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = []);
+public function paginate(int $perPage = 15, ?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [], array $groupIds = []);
     /**
      * Update a product.
      *
