@@ -56,12 +56,6 @@ class ProductController extends Controller
         }
         $categoryIds = array_filter(array_map('intval', (array) $categoryIds));
 
-        $groupIds = $request->get('group_ids', []);
-        if (is_string($groupIds)) {
-          $groupIds = explode(',', $groupIds);
-        }
-        $groupIds = array_filter(array_map('intval', (array) $groupIds));
-
         $brandIds = $request->get('brand_ids', []);
         if (is_string($brandIds)) {
             $brandIds = explode(',', $brandIds);
@@ -119,8 +113,7 @@ class ProductController extends Controller
                 $minRating,
                 $minPrice,
                 $maxPrice,
-                $attributeValueIds,
-                $groupIds
+                $attributeValueIds
             );
 
             return response()->json([
@@ -150,7 +143,6 @@ class ProductController extends Controller
             $minPrice,
             $maxPrice,
             $attributeValueIds,
-            $groupIds
         );
 
         return response()->json([

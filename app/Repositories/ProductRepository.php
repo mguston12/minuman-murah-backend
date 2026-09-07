@@ -152,7 +152,7 @@ class ProductRepository implements ProductRepositoryInterface
      * @param array $attributeValueIds
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    private function buildFilteredQuery(?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [], array $groupIds = [])
+    private function buildFilteredQuery(?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [])
     {
         $query = Product::with([
             'hasMany_category.fk_category',
@@ -182,12 +182,6 @@ class ProductRepository implements ProductRepositoryInterface
                 $q->whereIn('fk_category_id', $categoryIds);
             });
         }
-
-        if (!empty($groupIds)) {
-        $query->whereHas('hasMany_group', function ($q) use ($groupIds) {
-            $q->whereIn('fk_group_id', $groupIds); 
-        });
-    }
 
         if (!empty($brandIds)) {
             $query->whereHas('hasMany_brand', function ($q) use ($brandIds) {
