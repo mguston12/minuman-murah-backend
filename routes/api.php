@@ -30,6 +30,7 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BrandProductController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CustomerOrderController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MainBannerController;
 use App\Http\Controllers\MidtransWebhookController;
@@ -195,6 +196,11 @@ Route::middleware('auth:sanctum')
         Route::post('/{id}/complete', [OrderController::class, 'complete']);
         Route::post('/{id}/confirm-payment', [OrderController::class, 'confirmPayment']);
     });
+
+// Order Customer
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/customer/orders', [CustomerOrderController::class, 'index']);
+});
 
 // Point routes (authenticated only)
 Route::middleware('auth:sanctum')
