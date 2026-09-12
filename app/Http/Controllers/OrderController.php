@@ -5,6 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Resources\OrderResource\OrderResource;
 use App\Models\Order;
 use App\Models\Voucher;
+use App\Notifications\Order\OrderCompletedNotification;
+use App\Notifications\Order\OrderDeliveredNotification;
+use App\Notifications\Order\OrderExpiredOrCancelledNotification;
+use App\Notifications\Order\OrderPackingNotification;
+use App\Notifications\Order\OrderPaidNotification;
+use App\Notifications\Order\OrderShippedNotification;
 use App\Services\Order\OrderStockReductionService;
 use App\Services\Payment\MidtransService;
 use App\Services\Payment\OrderPaymentSyncService;
@@ -13,6 +19,7 @@ use App\Services\Point\PointService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class OrderController extends Controller
 {
@@ -22,14 +29,14 @@ class OrderController extends Controller
     public function __construct(
         OrderStockReductionService $orderStockReductionService,
         OrderPaymentSyncService $orderPaymentSyncService
-    )
-    {
+    ) {
         $this->orderStockReductionService = $orderStockReductionService;
         $this->orderPaymentSyncService = $orderPaymentSyncService;
     }
+
     /**
      * Get user's orders
-     * 
+     *
      * @param Request $request
      * @return JsonResponse
      */
@@ -57,12 +64,10 @@ class OrderController extends Controller
                 $query->where('fk_user_id', $user->id);
             }
 
-            // Filter by status
             if ($status) {
                 $query->where('status', $status);
             }
 
-            // Search by order number
             if (!empty($search)) {
                 $query->whereRaw(
                     'UPPER(order_number) LIKE ?',
@@ -101,7 +106,7 @@ class OrderController extends Controller
 
     /**
      * Get single order by ID
-     * 
+     *
      * @param int $id
      * @return JsonResponse
      */
@@ -143,7 +148,6 @@ class OrderController extends Controller
                 $order->payment_method !== 'xendit' &&
                 !$this->isXenditInvoiceUrl($order->payment_snap_token)
             ) {
-
                 try {
                     $isExpired = MidtransService::isTransactionExpired($order->order_number);
 
@@ -181,6 +185,12 @@ class OrderController extends Controller
                                     $voucher->decrement('voucher_used');
                                 }
                             }
+
+                            // ==================== EMAIL NOTIFICATION ====================
+                            $this->sendOrderNotification(
+                                $order,
+                                new OrderExpiredOrCancelledNotification($order, 'expired')
+                            );
                         }
                     }
                 } catch (\Exception $e) {
@@ -205,7 +215,7 @@ class OrderController extends Controller
 
     /**
      * Get order by order number
-     * 
+     *
      * @param string $orderNumber
      * @return JsonResponse
      */
@@ -254,7 +264,7 @@ class OrderController extends Controller
 
     /**
      * Update order payment status
-     * 
+     *
      * @param int $id
      * @param Request $request
      * @return JsonResponse
@@ -282,7 +292,6 @@ class OrderController extends Controller
                 ], 404);
             }
 
-            // Validate payment status
             $validated = $request->validate([
                 'payment_status' => 'required|in:PENDING,PAID,FAILED,CANCELLED,REFUNDED',
                 'payment_method' => 'nullable|string|max:250',
@@ -317,14 +326,44 @@ class OrderController extends Controller
             }
 
             if ($validated['payment_status'] === 'PAID' && $oldPaymentStatus !== 'PAID') {
+                // FIX: konversi stok reserved -> actual, sebelumnya method ini
+                // tidak pernah memanggil convertReservedToActual sama sekali.
+                if (!$order->relationLoaded('orderItems')) {
+                    $order->load('orderItems');
+                }
+
+                $orderItems = $order->orderItems->map(function ($item) {
+                    return [
+                        'variant_id' => $item->fk_variant_id,
+                        'qty' => $item->qty,
+                        'store_id' => $item->store_id,
+                    ];
+                })->toArray();
+
+                if (!empty($orderItems)) {
+                    $this->orderStockReductionService->convertReservedToActual($orderItems);
+                }
+
                 try {
                     $pointService = app(PointService::class);
                     $pointService->addPointsFromOrder($user->id, $order->id, $order->total_amount);
                 } catch (\Exception $e) {
                 }
+
+                // ==================== EMAIL NOTIFICATION ====================
+                $this->sendOrderNotification($order, new OrderPaidNotification($order));
+                // FIX: kirim juga notifikasi packing karena status langsung
+                // diset PACKING di atas (updateStatus() tidak akan melihat transisinya).
+                $this->sendOrderNotification($order, new OrderPackingNotification($order));
             }
 
-            // Load relationships for response
+            if (in_array($validated['payment_status'], ['FAILED', 'CANCELLED'], true) && $oldPaymentStatus !== $validated['payment_status']) {
+                $this->sendOrderNotification(
+                    $order,
+                    new OrderExpiredOrCancelledNotification($order, 'cancelled')
+                );
+            }
+
             $order->load(['orderItems.review', 'user']);
 
             return response()->json([
@@ -345,7 +384,7 @@ class OrderController extends Controller
 
     /**
      * Update order status and resi number (Admin only)
-     * 
+     *
      * @param int $id
      * @param Request $request
      * @return JsonResponse
@@ -362,7 +401,6 @@ class OrderController extends Controller
                 ], 404);
             }
 
-            // Validate request
             $validated = $request->validate([
                 'status' => 'required|in:PENDING,PACKING,DELIVERING,DELIVERED,COMPLETED,CANCELLED',
                 'courier_resi_number' => 'nullable|string|max:250',
@@ -371,12 +409,10 @@ class OrderController extends Controller
             $oldStatus = $order->status;
             $newStatus = $validated['status'];
 
-            // Update order
             $updateData = [
                 'status' => $newStatus,
             ];
 
-            // Update resi number if provided
             if (isset($validated['courier_resi_number'])) {
                 $updateData['courier_resi_number'] = $validated['courier_resi_number'];
             }
@@ -408,7 +444,39 @@ class OrderController extends Controller
                 }
             }
 
-            // Load relationships for response
+            // ==================== EMAIL NOTIFICATION ====================
+            // Hanya kirim kalau status benar-benar berubah, sesuaikan tiap status
+            // dengan notification class yang sudah dibuat.
+            // CATATAN: transisi ke PACKING lewat endpoint ini jarang terpicu di
+            // alur normal karena payment (webhook/confirmPayment/updatePaymentStatus)
+            // sudah men-set status PACKING duluan saat pembayaran sukses.
+            if ($newStatus !== $oldStatus) {
+                switch ($newStatus) {
+                    case 'PACKING':
+                        $this->sendOrderNotification($order, new OrderPackingNotification($order));
+                        break;
+
+                    case 'DELIVERING':
+                        $this->sendOrderNotification($order, new OrderShippedNotification($order));
+                        break;
+
+                    case 'DELIVERED':
+                        $this->sendOrderNotification($order, new OrderDeliveredNotification($order));
+                        break;
+
+                    case 'COMPLETED':
+                        $this->sendOrderNotification($order, new OrderCompletedNotification($order));
+                        break;
+
+                    case 'CANCELLED':
+                        $this->sendOrderNotification(
+                            $order,
+                            new OrderExpiredOrCancelledNotification($order, 'cancelled')
+                        );
+                        break;
+                }
+            }
+
             $order->load(['orderItems.review', 'user']);
 
             return response()->json([
@@ -491,6 +559,12 @@ class OrderController extends Controller
                 $this->orderStockReductionService->releaseReservedStock($orderItems);
             }
 
+            // ==================== EMAIL NOTIFICATION ====================
+            $this->sendOrderNotification(
+                $order,
+                new OrderExpiredOrCancelledNotification($order, 'cancelled')
+            );
+
             $order->load(['orderItems.review', 'user']);
 
             return response()->json([
@@ -556,23 +630,14 @@ class OrderController extends Controller
                 'status' => 'COMPLETED',
             ]);
 
-            if (!$order->relationLoaded('orderItems')) {
-                $order->load(['orderItems.review']);
-            }
-
-            $orderItems = $order->orderItems->map(function ($item) {
-                return [
-                    'variant_id' => $item->fk_variant_id,
-                    'qty' => $item->qty,
-                    'store_id' => $item->store_id,
-                ];
-            })->toArray();
-
-            if (!empty($orderItems)) {
-                $this->orderStockReductionService->releaseReservedStock($orderItems);
-            }
+            // FIX: releaseReservedStock() DIHAPUS. Order COMPLETED artinya barang
+            // sudah terjual dan sudah dikonversi ke stok actual saat PAID —
+            // TIDAK boleh direstore ke stok tersedia.
 
             $order->load(['orderItems.review', 'user']);
+
+            // ==================== EMAIL NOTIFICATION ====================
+            $this->sendOrderNotification($order, new OrderCompletedNotification($order));
 
             return response()->json([
                 'success' => true,
@@ -742,6 +807,12 @@ class OrderController extends Controller
                 ]);
             }
 
+            // ==================== EMAIL NOTIFICATION ====================
+            $this->sendOrderNotification($order, new OrderPaidNotification($order));
+            // FIX: konsisten dengan webhook & updatePaymentStatus — kirim juga
+            // notifikasi packing karena status langsung PACKING di sini.
+            $this->sendOrderNotification($order, new OrderPackingNotification($order));
+
             return response()->json([
                 'success' => true,
                 'message' => 'Payment confirmed',
@@ -825,6 +896,12 @@ class OrderController extends Controller
                             $this->orderStockReductionService->releaseReservedStock($orderItems);
                         }
 
+                        // ==================== EMAIL NOTIFICATION ====================
+                        $this->sendOrderNotification(
+                            $order,
+                            new OrderExpiredOrCancelledNotification($order, 'expired')
+                        );
+
                         $cancelledCount++;
                     }
                 } catch (\Exception $e) {
@@ -841,5 +918,31 @@ class OrderController extends Controller
         }
 
         return filter_var($value, FILTER_VALIDATE_URL) !== false && str_contains($value, 'xendit.co');
+    }
+
+    /**
+     * Kirim notification email untuk order, dibungkus try-catch supaya
+     * kegagalan pengiriman email tidak mengganggu alur utama request.
+     *
+     * @param Order $order
+     * @param \Illuminate\Notifications\Notification $notification
+     * @return void
+     */
+    private function sendOrderNotification(Order $order, $notification): void
+    {
+        if (!$order->contact_email) {
+            return;
+        }
+
+        try {
+            Notification::route('mail', $order->contact_email)
+                ->notify($notification);
+        } catch (\Exception $e) {
+            Log::error('ORDER: Failed to send email notification', [
+                'order_id' => $order->id,
+                'notification' => get_class($notification),
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 }

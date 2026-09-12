@@ -7,12 +7,14 @@ use App\Http\Resources\OrderResource\OrderResource;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Voucher;
+use App\Notifications\Order\OrderCreatedNotification;
 use App\Services\Cart\CartCalculationService;
 use App\Services\Order\OrderCalculationService;
 use App\Services\Order\OrderStockReductionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
@@ -242,6 +244,21 @@ class CheckoutController extends Controller
             DB::commit();
 
             $order->load(['orderItems', 'user']);
+
+            // ==================== EMAIL NOTIFICATION ====================
+            // Dikirim setelah commit berhasil, di luar transaksi DB, supaya
+            // kegagalan kirim email tidak sampai mem-rollback order yang sudah dibuat.
+            if ($order->contact_email) {
+                try {
+                    Notification::route('mail', $order->contact_email)
+                        ->notify(new OrderCreatedNotification($order));
+                } catch (\Exception $e) {
+                    Log::error('CHECKOUT: Failed to send OrderCreatedNotification', [
+                        'order_id' => $order->id,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
 
             return response()->json([
                 'success' => true,
