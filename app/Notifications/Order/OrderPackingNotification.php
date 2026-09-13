@@ -30,7 +30,7 @@ class OrderPackingNotification extends Notification implements ShouldQueue
             ->greeting("Halo {$order->shipping_first_name},")
             ->line('Pesananmu sedang kami kemas dengan hati-hati sebelum dikirim.')
             ->line("Nomor Pesanan: {$order->order_number}")
-            ->action('Lihat Pesanan', config('app.frontend_url') . ("/account/orders/{$order->order_number}"))
+            ->action('Lihat Pesanan', config('app.frontend_url') . ("/account/orders/{$order->id}"))
             ->line('Kami akan memberi kabar lagi begitu pesanan dikirim.');
     }
 }

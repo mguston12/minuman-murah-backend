@@ -31,7 +31,7 @@ class OrderPaidNotification extends Notification implements ShouldQueue
             ->line('Pembayaran untuk pesananmu sudah kami terima dan akan segera dikemas.')
             ->line("Nomor Pesanan: {$order->order_number}")
             ->line('Total Dibayar: Rp ' . number_format($order->total_amount, 0, ',', '.'))
-            ->action('Lihat Pesanan', config('app.frontend_url') . ("/account/orders/{$order->order_number}"))
+            ->action('Lihat Pesanan', config('app.frontend_url') . ("/account/orders/{$order->id}"))
             ->line('Terima kasih telah berbelanja di Minuman Murah!');
     }
 }

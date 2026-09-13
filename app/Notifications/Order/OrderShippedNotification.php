@@ -40,7 +40,7 @@ class OrderShippedNotification extends Notification implements ShouldQueue
         }
 
         return $mail
-            ->action('Lacak Pesanan', config('app.frontend_url') . ("/account/orders/{$order->order_number}"))
+            ->action('Lacak Pesanan', config('app.frontend_url') . ("/account/orders/{$order->id}"))
             ->line('Terima kasih telah berbelanja di Minuman Murah!');
     }
 }
