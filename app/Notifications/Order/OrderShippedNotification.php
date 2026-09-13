@@ -35,13 +35,12 @@ class OrderShippedNotification extends Notification implements ShouldQueue
             $mail->line("Kurir: {$order->courier_agent}" . ($order->courier_agent_service ? " ({$order->courier_agent_service})" : ''));
         }
 
-        // Sesuaikan nama kolom resi dengan yang ada di tabel orders kamu
         if (!empty($order->courier_resi_number)) {
             $mail->line("No. Resi: {$order->courier_resi_number}");
         }
 
         return $mail
-            ->action('Lacak Pesanan', frontend_url("/account/orders/{$order->uuid}"))
+            ->action('Lacak Pesanan', config('app.frontend_url') . ("/account/orders/{$order->uuid}"))
             ->line('Terima kasih telah berbelanja di Minuman Murah!');
     }
 }

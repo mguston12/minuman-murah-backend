@@ -43,7 +43,7 @@ class OrderExpiredOrCancelledNotification extends Notification implements Should
             ->line($message)
             ->line("Nomor Pesanan: {$order->order_number}")
             ->line('Jika kamu masih ingin membeli produk ini, silakan buat pesanan baru.')
-            ->action('Belanja Lagi', frontend_url('/products'))
+            ->action('Belanja Lagi', config('app.frontend_url') . ('/products'))
             ->line('Kalau ini bukan tindakanmu atau kamu punya pertanyaan, silakan hubungi tim support kami.');
     }
 }
