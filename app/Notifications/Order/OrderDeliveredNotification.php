@@ -31,7 +31,7 @@ class OrderDeliveredNotification extends Notification implements ShouldQueue
             ->line('Pesananmu telah sampai di alamat tujuan.')
             ->line("Nomor Pesanan: {$order->order_number}")
             ->line('Jika barang sudah kamu terima dengan baik, silakan konfirmasi penerimaan di akunmu.')
-            ->action('Konfirmasi Diterima', url("/account/orders/{$order->uuid}"))
+            ->action('Konfirmasi Diterima', frontend_url("/account/orders/{$order->uuid}"))
             ->line('Jika dalam beberapa hari tidak ada konfirmasi, pesanan akan otomatis diselesaikan sistem.');
     }
 }
