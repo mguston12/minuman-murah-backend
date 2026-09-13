@@ -32,7 +32,7 @@ class CustomerOrderController extends Controller
                 ], 401);
             }
 
-            $perPage = $request->input('per_page', 15);
+            $perPage = $request->input('per_page', 5);
             $status = $request->input('status');
             $search = $request->input('search');
 
