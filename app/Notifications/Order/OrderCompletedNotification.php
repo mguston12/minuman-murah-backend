@@ -31,7 +31,7 @@ class OrderCompletedNotification extends Notification implements ShouldQueue
             ->line('Terima kasih telah mengonfirmasi penerimaan pesananmu.')
             ->line("Nomor Pesanan: {$order->order_number}")
             ->line('Jangan lupa beri ulasan untuk produk yang kamu beli, ulasanmu sangat membantu pembeli lain.')
-            ->action('Beri Ulasan', config('app.frontend_url') . ("/account/orders/{$order->uuid}"))
+            ->action('Beri Ulasan', config('app.frontend_url') . ("/account/orders/{$order->order_number}"))
             ->line('Sampai jumpa di pesanan berikutnya!');
     }
 }

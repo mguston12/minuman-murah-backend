@@ -41,7 +41,7 @@ class OrderCreatedNotification extends Notification implements ShouldQueue
 
         return $mail
             ->line('Total Pembayaran: Rp ' . number_format($order->total_amount, 0, ',', '.'))
-            ->action('Selesaikan Pembayaran', config('app.frontend_url') . "/account/orders/{$order->uuid}")
+            ->action('Selesaikan Pembayaran', config('app.frontend_url') . "/account/orders/{$order->order_number}")
             ->line('Segera selesaikan pembayaran sebelum batas waktu berakhir.');
     }
 }
