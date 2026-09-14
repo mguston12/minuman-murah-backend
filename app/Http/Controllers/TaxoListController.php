@@ -123,6 +123,10 @@ class TaxoListController extends Controller
                 'taxonomy_status' => 'nullable|in:ACTIVE,INACTIVE',
             ]);
 
+            if ($request->hasFile('taxonomy_image')) {
+                $validated['taxonomy_image'] = $request->file('taxonomy_image')
+                    ->store('taxonomy-images', 'public');
+            }
             $taxoList = $this->taxoListRepository->create($validated);
 
             return response()->json([
@@ -191,6 +195,16 @@ class TaxoListController extends Controller
                 'taxonomy_sort' => 'nullable|integer',
                 'taxonomy_status' => 'nullable|in:ACTIVE,INACTIVE',
             ]);
+
+            if ($request->hasFile('taxonomy_image')) {
+                $existing = $this->taxoListRepository->findById($id);
+                if ($existing?->taxonomy_image) {
+                    \Storage::disk('public')->delete($existing->taxonomy_image);
+                }
+
+                $validated['taxonomy_image'] = $request->file('taxonomy_image')
+                    ->store('taxonomy-images', 'public');
+            }
 
             $taxoList = $this->taxoListRepository->update($id, $validated);
 
