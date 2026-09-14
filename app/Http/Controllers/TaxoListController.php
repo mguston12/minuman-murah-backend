@@ -63,7 +63,7 @@ class TaxoListController extends Controller
 
     /**
      * Get taxonomy items by parent.
-     */ 
+     */
     public function getByParent(int $parentId): JsonResponse
     {
         try {
@@ -118,7 +118,7 @@ class TaxoListController extends Controller
                 'taxonomy_description' => 'nullable|string',
                 'taxonomy_slug' => 'nullable|string|max:250',
                 'taxonomy_type' => 'required|integer|exists:taxo_types,id',
-                'taxonomy_image' => 'nullable|string',
+                'taxonomy_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
                 'taxonomy_sort' => 'nullable|integer',
                 'taxonomy_status' => 'nullable|in:ACTIVE,INACTIVE',
             ]);
