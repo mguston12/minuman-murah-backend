@@ -274,7 +274,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [TaxoListController::class, 'index'])->middleware('permission:products.read');
         Route::post('/', [TaxoListController::class, 'store'])->middleware('permission:products.create');
         Route::get('/{id}', [TaxoListController::class, 'show'])->middleware('permission:products.read');
-        Route::put('/{id}', [TaxoListController::class, 'update'])->middleware('permission:products.update');
+        Route::match(['put', 'post'], '/{id}', [TaxoListController::class, 'update'])->middleware('permission:products.update');
         Route::delete('/{id}', [TaxoListController::class, 'destroy'])->middleware('permission:products.delete');
     });
 
