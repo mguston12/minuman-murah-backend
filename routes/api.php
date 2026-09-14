@@ -111,6 +111,14 @@ Route::prefix('vouchers')->group(function () {
 Route::post('/vouchers/applicable', [VoucherController::class, 'applicable']);
 Route::post('/vouchers/validate', [VoucherController::class, 'validateVoucher']);
 
+Route::prefix('public/attributes')->group(function () {
+    Route::get('/active', [AttributeController::class, 'getActive']);
+});
+
+Route::prefix('public/attribute-values')->group(function () {
+    Route::get('/attribute/{attributeId}', [AttributeValueController::class, 'getByAttribute']);
+});
+
 // Public brand routes (no auth required for active brands)
 Route::prefix('brands')->group(function () {
     Route::get('/active', [BrandController::class, 'getActive']);
