@@ -15,9 +15,12 @@ class PublicProductSubGroupController extends Controller
     public function index(Request $request, $groupId)
     {
         $subGroups = ProductSubGroup::where('product_group_id', $groupId)
-            ->status('ACTIVE')
+            ->status('ACTIVE') // status sub-group, tetap ACTIVE
             ->with([
                 'products' => function ($query) use ($request) {
+
+                    // Hanya produk PUBLISH yang tampil ke publik
+                    $query->where('products.status', 'PUBLISH');
 
                     if ($request->has('limit') && is_numeric($request->limit)) {
                         $query->take((int) $request->limit);
@@ -56,15 +59,18 @@ class PublicProductSubGroupController extends Controller
     public function show(Request $request, $groupId, $subGroupId)
     {
         $subGroup = ProductSubGroup::where('product_group_id', $groupId)
-            ->status('ACTIVE')
+            ->status('ACTIVE') // status sub-group, tetap ACTIVE
             ->with([
                 'products' => function ($query) use ($request) {
+
+                    // Hanya produk PUBLISH yang tampil ke publik
+                    $query->where('products.status', 'PUBLISH');
 
                     if ($request->has('limit') && is_numeric($request->limit)) {
                         $query->take((int) $request->limit);
                     }
 
-                    $query->status('ACTIVE')
+                    $query
                         ->with([
                             'hasMany_image',
                             'hasMany_variant',
