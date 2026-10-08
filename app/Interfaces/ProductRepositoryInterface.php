@@ -53,14 +53,17 @@ interface ProductRepositoryInterface
      * @param string|null $search
      * @param array $categoryIds
      * @param array $brandIds
+     * @param int|null $storeId
      * @param bool|null $isNewArrival
      * @param float|null $minRating
      * @param float|null $minPrice
      * @param float|null $maxPrice
      * @param array $attributeValueIds
+     * @param bool $onlyActive
      * @return \Illuminate\Database\Eloquent\Collection
      */
-public function getAllWithFilters(?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = []);
+    public function getAllWithFilters(?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [], bool $onlyActive = false);
+
     /**
      * Get paginated products.
      *
@@ -70,14 +73,17 @@ public function getAllWithFilters(?string $sortBy = null, string $sortDirection 
      * @param string|null $search
      * @param array $categoryIds
      * @param array $brandIds
+     * @param int|null $storeId
      * @param bool|null $isNewArrival
      * @param float|null $minRating
      * @param float|null $minPrice
      * @param float|null $maxPrice
      * @param array $attributeValueIds
+     * @param bool $onlyActive
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-public function paginate(int $perPage = 15, ?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = []);
+    public function paginate(int $perPage = 15, ?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [], bool $onlyActive = false);
+
     /**
      * Update a product.
      *
