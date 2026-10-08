@@ -36,20 +36,6 @@ class ProductController extends Controller
     }
 
     /**
-     * Tentukan apakah request hanya boleh melihat produk ACTIVE.
-     * Admin (user login dengan permission products.read) boleh melihat semua status.
-     *
-     * @param Request $request
-     * @return bool
-     */
-    private function shouldShowOnlyActive(Request $request): bool
-    {
-        $user = $request->user('sanctum');
-
-        return !($user && $user->can('products.read'));
-    }
-
-    /**
      * Display a listing of products (paginated or all).
      * If per_page is not provided, returns all products without pagination.
      *
@@ -114,9 +100,6 @@ class ProductController extends Controller
         $maxPrice = $request->get('max_price');
         $maxPrice = $maxPrice !== null ? (float) $maxPrice : null;
 
-        // Publik hanya melihat produk ACTIVE, admin melihat semua
-        $onlyActive = $this->shouldShowOnlyActive($request);
-
         // If per_page is not provided, return all products without pagination
         if ($perPage === null || $perPage === '') {
             $products = $this->productRepository->getAllWithFilters(
@@ -130,8 +113,7 @@ class ProductController extends Controller
                 $minRating,
                 $minPrice,
                 $maxPrice,
-                $attributeValueIds,
-                $onlyActive
+                $attributeValueIds
             );
 
             return response()->json([
@@ -161,7 +143,6 @@ class ProductController extends Controller
             $minPrice,
             $maxPrice,
             $attributeValueIds,
-            $onlyActive
         );
 
         return response()->json([
@@ -213,16 +194,14 @@ class ProductController extends Controller
     /**
      * Display the specified product by slug.
      *
-     * @param Request $request
      * @param string $slug
      * @return JsonResponse
      */
-    public function show(Request $request, string $slug): JsonResponse
+    public function show(string $slug): JsonResponse
     {
         $product = $this->productRepository->findBySlug($slug);
 
-        // Produk tidak ada, atau INACTIVE dan pemanggil bukan admin
-        if (!$product || ($this->shouldShowOnlyActive($request) && $product->status !== 'ACTIVE')) {
+        if (!$product) {
             return response()->json([
                 'success' => false,
                 'message' => 'Product not found',
@@ -320,8 +299,7 @@ class ProductController extends Controller
     {
         $product = $this->productRepository->findBySlug($slug);
 
-        // Produk tidak ada, atau INACTIVE dan pemanggil bukan admin
-        if (!$product || ($this->shouldShowOnlyActive($request) && $product->status !== 'ACTIVE')) {
+        if (!$product) {
             return response()->json([
                 'success' => false,
                 'message' => 'Product not found',
@@ -334,7 +312,6 @@ class ProductController extends Controller
 
         $related = Product::query()
             ->where('id', '!=', $product->id)
-            ->where('status', 'ACTIVE')
             ->when(
                 $product->category_id,
                 fn($q) =>

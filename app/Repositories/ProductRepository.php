@@ -105,12 +105,11 @@ class ProductRepository implements ProductRepositoryInterface
      * @param float|null $minPrice
      * @param float|null $maxPrice
      * @param array $attributeValueIds
-     * @param bool $onlyActive
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function getAllWithFilters(?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [], bool $onlyActive = false)
+    public function getAllWithFilters(?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [])
     {
-        $query = $this->buildFilteredQuery($sortBy, $sortDirection, $search, $categoryIds, $brandIds, $storeId, $isNewArrival, $minRating, $minPrice, $maxPrice, $attributeValueIds, $onlyActive);
+        $query = $this->buildFilteredQuery($sortBy, $sortDirection, $search, $categoryIds, $brandIds, $storeId, $isNewArrival, $minRating, $minPrice, $maxPrice, $attributeValueIds);
         return $query->get();
     }
 
@@ -129,12 +128,11 @@ class ProductRepository implements ProductRepositoryInterface
      * @param float|null $minPrice
      * @param float|null $maxPrice
      * @param array $attributeValueIds
-     * @param bool $onlyActive
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function paginate(int $perPage = 15, ?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [], bool $onlyActive = false)
+    public function paginate(int $perPage = 15, ?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [])
     {
-        $query = $this->buildFilteredQuery($sortBy, $sortDirection, $search, $categoryIds, $brandIds, $storeId, $isNewArrival, $minRating, $minPrice, $maxPrice, $attributeValueIds, $onlyActive);
+        $query = $this->buildFilteredQuery($sortBy, $sortDirection, $search, $categoryIds, $brandIds, $storeId, $isNewArrival, $minRating, $minPrice, $maxPrice, $attributeValueIds);
         return $query->paginate($perPage);
     }
 
@@ -152,22 +150,21 @@ class ProductRepository implements ProductRepositoryInterface
      * @param float|null $minPrice
      * @param float|null $maxPrice
      * @param array $attributeValueIds
-     * @param bool $onlyActive
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    private function buildFilteredQuery(?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [], bool $onlyActive = false)
+    private function buildFilteredQuery(?string $sortBy = null, string $sortDirection = 'desc', ?string $search = null, array $categoryIds = [], array $brandIds = [], ?int $storeId = null, ?bool $isNewArrival = null, ?float $minRating = null, ?float $minPrice = null, ?float $maxPrice = null, array $attributeValueIds = [])
     {
         $query = Product::with([
             'hasMany_category.fk_category',
             'hasMany_variant' => function ($query) {
-                $query->where('status', 'ACTIVE')
-                    ->orderBy('price', 'asc')
-                    ->with([
-                        'stockRelations.store',
-                        'options.attribute',
-                        'options.attributeValue'
-                    ]);
-            },
+        $query->where('status', 'ACTIVE')
+              ->orderBy('price', 'asc')
+              ->with([
+                  'stockRelations.store',
+                  'options.attribute',
+                  'options.attributeValue'
+              ]);
+    },
             'hasMany_variant.stockRelations.store',
             'hasMany_image' => function ($query) {
                 $query->orderBy('is_featured', 'desc')->orderBy('order_number', 'asc');
@@ -178,11 +175,6 @@ class ProductRepository implements ProductRepositoryInterface
                     ->orderBy('review_date', 'desc');
             },
         ]);
-
-        // Hanya produk aktif untuk publik (admin dengan products.read melihat semua)
-        if ($onlyActive) {
-            $query->where('status', 'ACTIVE');
-        }
 
         // Filter by categories if provided
         if (!empty($categoryIds)) {
@@ -216,7 +208,7 @@ class ProductRepository implements ProductRepositoryInterface
                 });
             });
         }
-
+        
         // Search filter
         if ($search) {
             $query->where(function ($q) use ($search) {
