@@ -181,7 +181,7 @@ class ProductRepository implements ProductRepositoryInterface
 
         // Hanya produk aktif untuk publik (admin dengan products.read melihat semua)
         if ($onlyActive) {
-            $query->where('status', 'ACTIVE');
+            $query->where('status', 'PUBLISH');
         }
 
         // Filter by categories if provided

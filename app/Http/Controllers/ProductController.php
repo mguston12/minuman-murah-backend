@@ -222,7 +222,7 @@ class ProductController extends Controller
         $product = $this->productRepository->findBySlug($slug);
 
         // Produk tidak ada, atau INACTIVE dan pemanggil bukan admin
-        if (!$product || ($this->shouldShowOnlyActive($request) && $product->status !== 'ACTIVE')) {
+        if (!$product || ($this->shouldShowOnlyActive($request) && $product->status !== 'PUBLISH')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Product not found',
@@ -321,7 +321,7 @@ class ProductController extends Controller
         $product = $this->productRepository->findBySlug($slug);
 
         // Produk tidak ada, atau INACTIVE dan pemanggil bukan admin
-        if (!$product || ($this->shouldShowOnlyActive($request) && $product->status !== 'ACTIVE')) {
+        if (!$product || ($this->shouldShowOnlyActive($request) && $product->status !== 'PUBLISH')) {
             return response()->json([
                 'success' => false,
                 'message' => 'Product not found',
@@ -334,7 +334,7 @@ class ProductController extends Controller
 
         $related = Product::query()
             ->where('id', '!=', $product->id)
-            ->where('status', 'ACTIVE')
+            ->where('status', 'PUBLISH')
             ->when(
                 $product->category_id,
                 fn($q) =>
